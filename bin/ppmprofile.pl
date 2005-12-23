@@ -5,7 +5,7 @@ unless (eval "use PPM::UI; 1;") {
     die "You must run this script with ActivePerl";
 }
 
-our $VERSION = join('.', 1, q$Revision: #1 $ =~ /#(\d+)/);
+our $VERSION = join('.', 1, q$Revision: #2 $ =~ /#(\d+)/);
 
 use Getopt::Long;
 use Pod::Usage;
@@ -157,15 +157,19 @@ PPM packages. It can then be used to automatically install all these
 package in another installation of ActivePerl, possibly on a different
 machine.
 
-=head2 save
+=over 4
+
+=item * save
 
 Save will export a snapshot of all installed modules in a profile file
 called C<profile.xml> by default
 
-=head2 restore
+=item * restore
 
 Restore will import a snapshot from a profile file (called C<profile.xml> 
 by default) and use PPM to re-install these modules
+
+=back
 
 =cut
 
