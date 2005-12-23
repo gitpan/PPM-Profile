@@ -1,0 +1,19 @@
+#!/usr/bin/env perl
+use strict;
+use ExtUtils::MakeMaker;
+
+WriteMakefile(
+              NAME   => 'PPM::Profile',
+              AUTHOR => 'Philippe M. Chiasson <gozer@ActiveState.com>',
+              VERSION_FROM => 'bin/ppmprofile.pl',
+              ABSTRACT     => 'A tool to save and restore PPM profiles',
+              EXE_FILES    => [glob('bin/*')],
+	      (MM->can('signature_target') ? (SIGN => 1) : ()),
+              PREREQ_PM    => {
+                            'PPM::UI'      => 3,
+                            'Getopt::Long' => 0,
+                            'File::Temp'   => 0,
+                            'XML::Simple'  => 0,
+                            'Pod::Usage'   => 0,
+                           },
+             );
