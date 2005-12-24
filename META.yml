@@ -1,8 +1,8 @@
 # http://module-build.sourceforge.net/META-spec.html
 #XXXXXXX This is a prototype!!!  It will change in the future!!! XXXXX#
 name:         PPM-Profile
-version:      1.2
-version_from: bin/ppmprofile.pl
+version:      1.3
+version_from: lib/PPM/Profile.pm
 installdirs:  site
 requires:
     File::Temp:                    0

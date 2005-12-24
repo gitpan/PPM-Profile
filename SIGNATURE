@@ -15,15 +15,15 @@ not run its Makefile.PL or Build.PL.
 Hash: SHA1
 
 SHA1 1336cf4f459a70ce496fdfd24f11eb7d7fa92bca MANIFEST
-SHA1 1b2813cadaee0a42772c894282a611b23916978f META.yml
-SHA1 23a2118dbe19ac845adec3f1bdc6f5f6aa0886ae Makefile.PL
+SHA1 a34cd78eef26332261c672e177d7acd53e4374b2 META.yml
+SHA1 4fcee88801693257dcc290d1f0ed76edc9f5789c Makefile.PL
 SHA1 3be92d5dcef2a54a932e3e332455a983a17e4b41 bin/ppmprofile.pl
-SHA1 d6a61bdf8307d988f62e0de46efda04f1ec41788 lib/PPM/Profile.pm
+SHA1 6c42fbe1fcb1fe349ab8f447e9b79d0c055f3d9a lib/PPM/Profile.pm
 SHA1 df45ad5681b7a2f2bf7338b54425389e5349ee74 t/0-signature.t
 -----BEGIN PGP SIGNATURE-----
 Version: GnuPG v1.4.1 (GNU/Linux)
 
-iD8DBQFDrIrgyzKhB4jDpaURAi6uAJ9cmf2ox0/j2w/OWxUJnRg+cqltbACgxQ4z
-1zQtQdKjktzWwn6+QNXT1EM=
-=+f6m
+iD8DBQFDrJ6OyzKhB4jDpaURArm/AJ4rODAW5Q1FxkHS53ueWPVjXhMSvgCfTtMA
+Unrcl5f0Kkyxi2T2U04I3zE=
+=bG1f
 -----END PGP SIGNATURE-----

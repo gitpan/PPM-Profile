@@ -5,7 +5,7 @@ use ExtUtils::MakeMaker;
 WriteMakefile(
               NAME   => 'PPM::Profile',
               AUTHOR => 'Philippe M. Chiasson <gozer@ActiveState.com>',
-              VERSION_FROM => 'bin/ppmprofile.pl',
+              VERSION_FROM => 'lib/PPM/Profile.pm',
               ABSTRACT     => 'A tool to save and restore PPM profiles',
               EXE_FILES    => [glob('bin/*')],
 	      (MM->can('signature_target') ? (SIGN => 1) : ()),
