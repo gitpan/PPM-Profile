@@ -10,7 +10,6 @@ WriteMakefile(
               EXE_FILES    => [glob('bin/*')],
 	      (MM->can('signature_target') ? (SIGN => 1) : ()),
               PREREQ_PM    => {
-                            'PPM::UI'      => 3,
                             'Getopt::Long' => 0,
                             'File::Temp'   => 0,
                             'XML::Simple'  => 0,

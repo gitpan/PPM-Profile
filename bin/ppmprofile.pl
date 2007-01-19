@@ -1,11 +1,15 @@
 #!perl
 
 use strict;
-unless (eval "use PPM::UI; 1;") {
+
+use constant PPM3 => eval "use PPM::UI; 1;";
+use constant PPM4 => eval "use ActivePerl::PPM::Client; 1;";
+
+unless (PPM3 || PPM4) {
     die "You must run this script with ActivePerl";
 }
 
-our $VERSION = join('.', 1, q$Revision: #2 $ =~ /#(\d+)/);
+our $VERSION = join('.', 1, q$Revision: #3 $ =~ /#(\d+)/);
 
 use Getopt::Long;
 use Pod::Usage;
@@ -28,34 +32,95 @@ else {
     exit pod2usage("Unknown mode: $mode");
 }
 
+sub ActivePerl::PPM::Package::osd_version {
+    my $pkg = shift;
+    my $osd = $pkg->version;
+    
+    my @v = map { s/^0+//g; $_ } split /\./, $osd;
+    push @v, '0' for 1..4-@v;
+    
+    $osd = join ',',@v;
+    
+    return $osd;
+}
+
+sub ActivePerl::PPM::Package::xml {
+    my $pkg = shift;
+    my $client = shift;
+    my $name = $pkg->name;
+    my $abstract = $pkg->abstract;
+    my $version = $pkg->version;
+    my $uri = $pkg->ppd_uri;
+    
+    print "pkg:$name, uri: $uri\n";
+    
+    $uri =~ s[/package.xml$][];
+    my $code = $pkg->codebase;
+    
+    my $codebase_xml;
+    if ($uri && $code) {
+        $codebase_xml = qq(\n    <CODEBASE HREF="$uri/$code" />);
+    }
+    
+    my $arch = $client->arch;
+    my $os = $^O;
+return <<"EOF"
+ <SOFTPKG NAME="$name" VERSION="$version">
+  <ABSTRACT>$abstract</ABSTRACT>
+  <IMPLEMENTATION>
+    <ARCHITECTURE NAME="$arch" />$codebase_xml
+    <OS NAME="$os" />
+  </IMPLEMENTATION>
+ </SOFTPKG>
+EOF
+}
+
 sub save {
     my $profile = shift @ARGV || 'profile.xml';
+    
+    die "$0 save is not supported for PPM4 yet" if PPM4;
 
     open(my $fh, ">", $profile)
       || die "Can't open profile file:" . "$profile ($!)";
 
     print STDERR "Saving to $profile:\n" if $opts{verbose};
 
-    my @targets = PPM::UI::target_list()->result_l;
-    my $target  = $targets[0];
-
-    my @query = PPM::UI::query($target, '*')->result_l;
-
     my @profile;
 
-    my $fake_rep = PPM::Repository->new("xxx", "PPM Profile");
+    if (PPM3) {
+        my @targets = PPM::UI::target_list()->result_l;
+        my $target  = $targets[0];
 
-    foreach my $ppm (@query) {
-        $ppm->make_complete($target);
-        my $name = $ppm->name;
-        my $ppd  = $ppm->getppd_obj->result;
+        my @query = PPM::UI::query($target, '*')->result_l;
 
-        my $version = $ppd->version;
+        my $fake_rep = PPM::Repository->new("xxx", "PPM Profile");
 
-        print STDERR "\t$name ($version)\n" if $opts{verbose};
-        (my $xml = $ppm->getppd->result) =~ s/<\?xml[^>]+>\n//;
+        foreach my $ppm (@query) {
+            $ppm->make_complete($target);
+            my $name = $ppm->name;
+            my $ppd  = $ppm->getppd_obj->result;
 
-        push @profile, $xml;
+            my $version = $ppd->version;
+
+            print STDERR "\t$name ($version)\n" if $opts{verbose};
+            (my $xml = $ppm->getppd->result) =~ s/<\?xml[^>]+>\n//;
+
+            push @profile, $xml;
+        }
+    }
+    elsif (PPM4) {
+        # Not quite supported yet.
+        my $client = ActivePerl::PPM::Client->new;
+        foreach my $area_name ($client->areas) {
+            my $area = $client->area( $area_name );
+            print "Area: $area\n";
+            foreach my $pkg_name ($area->packages) {
+                my $pkg = $area->package($pkg_name);
+                my $xml = $pkg->xml($client);
+                print "package: $pkg_name\n";
+                push @profile, $xml;
+            }
+        }
     }
 
     my $now = localtime;
@@ -82,29 +147,35 @@ sub restore {
                      suppressempty => undef,
                     );
 
-    my $ppm    = File::Spec->catfile($Config{installbin}, 'ppm3');
+    my $ppm    = File::Spec->catfile($Config{installbin}, PPM4 ? 'ppm' : 'ppm3');
     my $nul    = File::Spec->devnull;
     my $output = $opts{verbose} ? "" : "1>$nul 2>$nul";
 
     my @failed;
     foreach my $pkg (@{$data->{SOFTPKG} || []}) {
         my $name = $pkg->{NAME};
-        my $ppd = XMLout(
+        
+        print "Restoring $name: " if $opts{verbose};
+
+        if (PPM3) {
+            my $ppd = XMLout(
                    $pkg,
                    rootname => 'SOFTPKG',
                    xmldecl => q{<?xml version="1.0" encoding="UTF-8"?>},
-        );
-        print "Restoring $name: " if $opts{verbose};
+            );
+            my $tmp = new File::Temp(SUFFIX => '.ppd');
+            binmode($tmp, ':utf8');
+            print $tmp $ppd;
+            $tmp->flush;
+        
+            system(qq($ppm install --nofollow --force "$tmp" $output));
 
-        my $tmp = new File::Temp(SUFFIX => '.ppd');
-        binmode($tmp, ':utf8');
-        print $tmp $ppd;
-        $tmp->flush;
-
-        system(qq($ppm install --nofollow --force "$tmp" $output));
-
-        if ($? != 0) {
-            system(qq($ppm install --nofollow --force $name $output));
+            if ($? != 0) {
+                system(qq($ppm install --nofollow --force $name $output));
+            }
+        }
+        else {
+            system(qq($ppm install --nodeps --force $name $output));
         }
 
         if ($? != 0) {
@@ -117,7 +188,7 @@ sub restore {
     }
 
     print STDERR "Failed restoring the following packages: ";
-    print STDERR join ',', @failed;
+    print STDERR join ', ', @failed;
     print STDERR "\n";
 
 }

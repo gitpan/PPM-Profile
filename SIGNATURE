@@ -1,5 +1,5 @@
 This file contains message digests of all files listed in MANIFEST,
-signed via the Module::Signature module, version 0.50.
+signed via the Module::Signature module, version 0.55.
 
 To verify the content in this distribution, first make sure you have
 Module::Signature installed, then type:
@@ -15,15 +15,15 @@ not run its Makefile.PL or Build.PL.
 Hash: SHA1
 
 SHA1 1336cf4f459a70ce496fdfd24f11eb7d7fa92bca MANIFEST
-SHA1 a34cd78eef26332261c672e177d7acd53e4374b2 META.yml
-SHA1 4fcee88801693257dcc290d1f0ed76edc9f5789c Makefile.PL
-SHA1 3be92d5dcef2a54a932e3e332455a983a17e4b41 bin/ppmprofile.pl
-SHA1 6c42fbe1fcb1fe349ab8f447e9b79d0c055f3d9a lib/PPM/Profile.pm
+SHA1 376835dc23a418a2d528f9a4a97a362b616a99f3 META.yml
+SHA1 d455fc5dc475cf5402d869974d2e31a211049621 Makefile.PL
+SHA1 aa76decea354f434c7df5b0fb7514f28954100ed bin/ppmprofile.pl
+SHA1 18bf9fe8c2a9fa696e744ca2ae22131038029a7f lib/PPM/Profile.pm
 SHA1 df45ad5681b7a2f2bf7338b54425389e5349ee74 t/0-signature.t
 -----BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.1 (GNU/Linux)
+Version: GnuPG v1.4.6 (GNU/Linux)
 
-iD8DBQFDrJ6OyzKhB4jDpaURArm/AJ4rODAW5Q1FxkHS53ueWPVjXhMSvgCfTtMA
-Unrcl5f0Kkyxi2T2U04I3zE=
-=bG1f
+iD8DBQFFsTOIyzKhB4jDpaURAvBPAJ90m1iljq6BH2G3GvA347PPp4WK7gCePgPu
+EqykW3ru98o351bnGjNFyXo=
+=Sc/Z
 -----END PGP SIGNATURE-----
